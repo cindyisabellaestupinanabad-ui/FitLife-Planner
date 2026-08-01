@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - Rutina y Nutrición</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans">
+
+    <nav class="bg-indigo-600 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-bold tracking-wide"><i class="fa-solid fa-heart-pulse mr-2"></i>FitLife</h1>
+            <span class="text-sm bg-indigo-700 px-3 py-1 rounded-full" id="current-date">Hoy</span>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <section class="md:col-span-2 bg-white rounded-2xl shadow-sm p-6 border border-slate-100">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-dumbbell text-indigo-500 mr-2"></i>Rutina del Día</h2>
+                <span class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full">Fuerza & Cardio</span>
+            </div>
+            
+            <div class="space-y-3" id="workout-list">
+                </div>
+        </section>
+
+        <section class="space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-slate-100">
+                <h2 class="text-lg font-bold text-slate-900 mb-4"><i class="fa-solid fa-utensils text-emerald-500 mr-2"></i>Alimentación Sana</h2>
+                
+                <div class="space-y-3" id="diet-list">
+                    </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-sm p-6 text-white">
+                <h2 class="text-lg font-semibold mb-2"><i class="fa-solid fa-droplet mr-2"></i>Control de Hidratación</h2>
+                <p class="text-xs text-indigo-100 mb-4">Meta diaria: 2.5 Litros</p>
+                <div class="flex items-center justify-between bg-white/10 p-3 rounded-xl mb-4">
+                    <span class="text-2xl font-bold" id="water-count">0 / 10</span>
+                    <span class="text-xs text-indigo-200">Vasos (250ml)</span>
+                </div>
+                <button onclick="addWater()" class="w-full bg-white text-indigo-600 font-medium py-2.5 rounded-xl shadow-sm hover:bg-indigo-50 transition active:scale-95">
+                    <i class="fa-solid fa-plus mr-1"></i> Registrar Vaso de Agua
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Fecha actual en el Navbar
+        const opciones = { weekday: 'long', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('es-ES', opciones);
+
+        // Base de datos simulada para la rutina
+        const ejercicios = [
+            { id: 1, nombre: "Sentadillas con peso", series: "4 series x 12 reps", icono: "fa-person-bootcamp" },
+            { id: 2, nombre: "Flexiones de pecho (Push-ups)", series: "3 series x 15 reps", icono: "fa-child-reaching" },
+            { id: 3, nombre: "Desplantes / Estocadas", series: "3 series x 12 por pierna", icono: "fa-person-walking" },
+            { id: 4, nombre: "Plancha Abdominal", series: "3 series de 45 segundos", icono: "fa-stopwatch" },
+            { id: 5, nombre: "Cardio: Saltar la cuerda", series: "10 minutos (ritmo moderado)", icono: "fa-bolt" }
+        ];
+
+        // Base de datos simulada para la alimentación
+        const comidas = [
+            { tipo: "Desayuno", menu: "Avena con plátano, nueces y un huevo poché.", cal: "~400 kcal" },
+            { tipo: "Almuerzo", menu: "Pechuga de pollo a la plancha, arroz integral y ensalada verde.", cal: "~550 kcal" },
+            { tipo: "Snack", menu: "Un puñado de almendras y una manzana verde.", cal: "~180 kcal" },
+            { tipo: "Cena", menu: "Filete de salmón o merluza al horno con espárragos.", cal: "~350 kcal" }
+        ];
+
+        // Renderizar Ejercicios
+        const workoutList = document.getElementById('workout-list');
+        ejercicios.forEach(ej => {
+            workoutList.innerHTML += `
+                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition border border-slate-200/60">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                            <i class="fa-solid ${ej.icono} text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-slate-800">${ej.nombre}</h3>
+                            <p class="text-xs text-slate-500">${ej.series}</p>
+                        </div>
+                    </div>
+                    <input type="checkbox" class="w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 accent-indigo-600 cursor-pointer">
+                </div>
+            `;
+        });
+
+        // Renderizar Dieta
+        const dietList = document.getElementById('diet-list');
+        comidas.forEach(comida => {
+            dietList.innerHTML += `
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-600">${comida.tipo}</span>
+                        <span class="text-xs text-slate-400 font-mono">${comida.cal}</span>
+                    </div>
+                    <p class="text-sm text-slate-700">${comida.menu}</p>
+                </div>
+            `;
+        });
+
+        // Contador de Agua con almacenamiento Local (LocalStorage)
+        let vasosAgua = parseInt(localStorage.getItem('vasosAgua')) || 0;
+        const waterCountEl = document.getElementById('water-count');
+
+        function actualizarAgua() {
+            waterCountEl.innerText = `${vasosAgua} / 10`;
+            localStorage.setItem('vasosAgua', vasosAgua);
+        }
+
+        function addWater() {
+            if (vasosAgua < 10) {
+                vasosAgua++;
+                actualizarAgua();
+            } else {
+                alert("¡Excelente! Has alcanzado tu meta de hidratación por hoy.");
+                vasosAgua = 0; // Reinicio para demostración
+                actualizarAgua();
+            }
+        }
+
+        // Inicializar contador de agua en pantalla
+        actualizarAgua();
+    </script>
+</body>
+</html>
